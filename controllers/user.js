@@ -5,13 +5,12 @@ const asyncWrapper = require('../middleware/async');
 const { createCustomError } = require('../errors/custom_error');
 
 const signUp = asyncWrapper( async (req, res) => {
-    const {firstname, lastname, email, password } = req.body;
+    const {name, email, password } = req.body;
     const saltPassword = bcrypt.genSaltSync(10);
     const hashPassword = bcrypt.hashSync(req.body.password, saltPassword);
 
     const user = await Users.create({
-        firstname,
-        lastname,
+        name,
         email,
         password: hashPassword,
     })
