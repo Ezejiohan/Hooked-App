@@ -19,7 +19,7 @@ const signUp = asyncWrapper(async (req, res) => {
 
 const login = asyncWrapper(async (req, res, next) => {
     const loginRequest = { email: req.body.email, password: req.body.password}
-    const admin = await Users.findOne({ email: req.body.email});
+    const admin = await Admin.findOne({ email: req.body.email});
     if (!admin) {
         return next(createCustomError("Admin not found", 404));
     } else {
