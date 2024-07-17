@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
+const adminSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'must provide a name'],
@@ -17,9 +17,9 @@ const userSchema = new mongoose.Schema({
         required: [true, 'password must be 8 characters long and include at least one uppercase and one special character']
     },
     
-}, {
-    timestamps: true
+}, { 
+    timestamps: true 
 });
 
-const Users = mongoose.model('Users', userSchema);
-module.exports = Users;
+const Admin = mongoose.model('Admin', adminSchema);
+module.exports = Admin
