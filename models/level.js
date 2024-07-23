@@ -14,6 +14,7 @@ const levelSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Subcategory'
     },
+    cards: []
 
 });
 
