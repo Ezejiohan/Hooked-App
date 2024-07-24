@@ -13,6 +13,15 @@ const createCard = asyncWrapper(async(req, res, next) => {
     level.cards.push(cardData._id);
     await cardData.save();
     res.status(201).json({ cardData })
+});
+
+const getAllCards = asyncWrapper(async (req, res) => {
+    const cards = await Cards.find({}).populate('level');
+    res.status(200).json({cards});
+});
+
+const getCard =asyncWrapper(async (req, res, next) => {
+    
 })
 
 module.exports = {
