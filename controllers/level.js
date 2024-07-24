@@ -15,7 +15,11 @@ const createLevel = asyncWrapper( async (req, res) => {
         return next(createCustomError(`Subcategory not found : ${subcategoryId}`, 404))
     }
     const levelData = await Level.create({ levelname, category: categoryId, subcategory: subcategoryId });
-    await levelData.save()
+    category.level.push(levelData._id);
+    subcategory.level.push(levelData._id);
+    await category.save();
+    await subcategory.save();
+    await levelData.save();
     res.status(201).json({ levelData });
 });
 
