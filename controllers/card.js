@@ -16,14 +16,31 @@ const createCard = asyncWrapper(async(req, res, next) => {
 });
 
 const getAllCards = asyncWrapper(async (req, res) => {
-    const cards = await Cards.find({}).populate('level');
-    res.status(200).json({cards});
+    const { levelId } = req.params;
+    const level = await Level.findById(levelId).populate('cards');
+    if (!level) {
+        return next(createCustomError(`Level not found: ${levelId}`, 404));
+    }
+    res.status(200).json({ cards: level.cards });
 });
 
 const getCard =asyncWrapper(async (req, res, next) => {
+    const { levelId, cardId } = req.params;
+    const level = await Level.findById(levelId);
+    if (!level) {
+        return next(createCustomError(`Level not found: ${levelId}`, 404));
+    }
+
+    const card = level.cards.id(cardId); 
+    if (!card) {
+        return next(createCustomError(`Card not found: ${cardId}`, 404));
+    }
     
+    res.status(200).json({ card });
 })
 
 module.exports = {
-    createCard
+    createCard,
+    getAllCards,
+    getCard
 }

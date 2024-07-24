@@ -24,15 +24,21 @@ const createLevel = asyncWrapper( async (req, res) => {
 });
 
 const getAllLevels = asyncWrapper(async (req, res) => {
-    const level = await Level.find({}).populate('cards');
+    const level = await Level.find({})
+    .populate('cards')
+    .populate('category')
+    .populate('subcategory');
     res.status(200).json({ level });
 });
 
 const getLevel = asyncWrapper(async (req, res, next) => {
     const { id } = req.params;
-    const level = await Level.findById(id).populate('cards');
-    if (!id) {
-        return next(createCustomError(`id not found : ${id}`, 404))
+    const level = await Level.findById(id)
+    .populate('category')
+    .populate('subcategory')
+    .populate('cards');
+    if (!level) {
+        return next(createCustomError(`Level not found : ${id}`, 404))
     }
     res.status(200).json({level})
 });
