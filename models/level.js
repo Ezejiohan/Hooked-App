@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Subcategory = require('./subcategory');
 
 const levelSchema = new mongoose.Schema({
     levelname: {
