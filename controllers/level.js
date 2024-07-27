@@ -14,6 +14,7 @@ const createLevel = asyncWrapper( async (req, res) => {
     if (!subcategory) {
         return next(createCustomError(`Subcategory not found : ${subcategoryId}`, 404))
     }
+    const level = await Level.findById()
     const levelData = await Level.create({ levelname, category: categoryId, subcategory: subcategoryId });
     category.level.push(levelData._id);
     subcategory.level.push(levelData._id);
@@ -24,19 +25,13 @@ const createLevel = asyncWrapper( async (req, res) => {
 });
 
 const getAllLevels = asyncWrapper(async (req, res) => {
-    const level = await Level.find({})
-    .populate('cards')
-    .populate('category')
-    .populate('subcategory');
+    const level = await Level.find({}).populate('cards')
     res.status(200).json({ level });
 });
 
 const getLevel = asyncWrapper(async (req, res, next) => {
     const { id } = req.params;
-    const level = await Level.findById(id)
-    .populate('category')
-    .populate('subcategory')
-    .populate('cards');
+    const level = await Level.findById(id).populate('cards');
     if (!level) {
         return next(createCustomError(`Level not found : ${id}`, 404))
     }
