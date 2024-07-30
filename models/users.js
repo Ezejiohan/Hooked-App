@@ -16,6 +16,30 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'password must be 8 characters long and include at least one uppercase and one special character']
     },
+    studied: [
+        {
+            cardId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Card'
+            },
+            date: {
+                type: Date,
+                default: Date.now
+            }
+        }
+    ],
+    skipped: [
+        {
+            cardId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Card'
+            },
+            date: {
+                type: Date,
+                default: Date.now
+            }
+        }
+    ]
     
 }, {
     timestamps: true

@@ -41,4 +41,37 @@ const login = asyncWrapper( async (req, res, next) => {
     }
 });
 
-module.exports = { signUp, login}
+const studied = asyncWrapper( async (req, res, next) => {
+    const { userId, cardId } = req.params;
+
+    const user = await Users.findById(userId);
+    if (!user) {
+        return next(createCustomError('User not found', 404));
+    }
+
+    user.studied.push({ cardId });
+    await user.save();
+
+    res.status(200).json({ message: 'Card added to studied list', user });
+});
+
+const skipped = asyncWrapper(async (req, res, next) => {
+    const { userId, cardId } = req.params;
+
+    const user = await Users.findById(userId);
+    if (!user) {
+        return next(createCustomError('User not found', 404));
+    }
+
+    user.skipped.push({ cardId });
+    await user.save();
+
+    res.status(200).json({ message: 'Card added to skipped list', user });
+})
+
+module.exports = {
+     signUp, 
+     login, 
+     studied, 
+     skipped 
+}
