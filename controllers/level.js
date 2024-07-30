@@ -14,7 +14,10 @@ const createLevel = asyncWrapper( async (req, res) => {
     if (!subcategory) {
         return next(createCustomError(`Subcategory not found : ${subcategoryId}`, 404))
     }
-    const level = await Level.findById()
+    const existingLevel = await Level.findOne({ levelname, category: categoryId, subcategory: subcategoryId });
+    if (existingLevel) {
+        return next(createCustomError(`Level already exists`, 400));
+    }
     const levelData = await Level.create({ levelname, category: categoryId, subcategory: subcategoryId });
     category.level.push(levelData._id);
     subcategory.level.push(levelData._id);
