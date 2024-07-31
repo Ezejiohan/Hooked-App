@@ -49,7 +49,15 @@ const studied = asyncWrapper( async (req, res, next) => {
         return next(createCustomError('User not found', 404));
     }
 
-    user.studied.push({ cardId });
+    const cardIndex = user.skipped.findIndex(item => item.toString() === cardId);
+    if (cardIndex !== -1) {
+        user.skipped.splice(cardIndex, 1);
+    }
+
+    if (!user.studied.some(item => item.toString() === cardId)) {
+        user.studied.push(cardId);
+    }
+
     await user.save();
 
     res.status(200).json({ message: 'Card added to studied list', user });
