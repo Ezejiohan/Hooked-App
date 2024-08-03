@@ -3,7 +3,8 @@ const {
     signUp, 
     login, 
     studied, 
-    skipped 
+    skipped, 
+    getOneUser
 } = require('../controllers/user');
 
 const route = express.Router();
@@ -13,8 +14,9 @@ route.get('/', (req, res) => {
 
 route.post('/users', (signUp));
 route.post('/users/log-in', (login));
+route.get('/users/:id', (getOneUser));
 route.post('/users/:userId/studied/:cardId', (studied));
-route.post('/users/:userId/skipped/:cardId', (skipped))
+route.post('/users/:userId/skipped/:cardId', (skipped));
 
 module.exports = route;
 

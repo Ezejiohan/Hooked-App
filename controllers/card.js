@@ -4,7 +4,8 @@ const asyncWrapper = require('../middleware/async');
 const {createCustomError} = require('../errors/custom_error');
 
 const createCard = asyncWrapper(async(req, res, next) => {
-    const { levelId, cardName, cardDescription, question, answer } = req.body;
+    const { cardName, cardDescription, question, answer } = req.body;
+    const { levelId } = req.params
     const level = await Level.findById(levelId);
     if (!level) {
         return next(createCustomError(`Level not found : ${levelId}`, 404));

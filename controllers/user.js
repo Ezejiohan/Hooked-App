@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const asyncWrapper = require('../middleware/async');
 const { createCustomError } = require('../errors/custom_error');
+const Cards = require('../models/card');
 
 const signUp = asyncWrapper( async (req, res) => {
     const {name, email, password } = req.body;
@@ -41,14 +42,25 @@ const login = asyncWrapper( async (req, res, next) => {
     }
 });
 
+const getOneUser = asyncWrapper(async (req, res, next) => {
+    const {id} = req.params;
+    const user = await Users.findById(id)
+    if (!user) {
+        return next(createCustomError(`User not found : ${id}`, 404))
+    }
+    res.status(200).json({user})
+});
+
 const studied = asyncWrapper( async (req, res, next) => {
     const { userId, cardId } = req.params;
-
-    const user = await Users.findById(userId);
+    const user = await Users.findById(req.params.userId)
     if (!user) {
         return next(createCustomError('User not found', 404));
     }
-
+    const card = await Cards.findById(cardId);
+    if (!card) {
+        return next(createCustomError('Card not found', 404));
+    }
     const cardIndex = user.skipped.findIndex(item => item.toString() === cardId);
     if (cardIndex !== -1) {
         user.skipped.splice(cardIndex, 1);
@@ -70,16 +82,20 @@ const skipped = asyncWrapper(async (req, res, next) => {
     if (!user) {
         return next(createCustomError('User not found', 404));
     }
-
     user.skipped.push({ cardId });
     await user.save();
 
     res.status(200).json({ message: 'Card added to skipped list', user });
+});
+
+const getAllStudied = asyncWrapper(async(req, res) => {
+    const studied = await Users.find({});
 })
 
 module.exports = {
      signUp, 
-     login, 
+     login,
+     getOneUser, 
      studied, 
      skipped 
 }

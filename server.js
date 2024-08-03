@@ -5,6 +5,7 @@ const adminRoute = require('./routes/admins');
 const categoryRoute = require('./routes/categorys');
 const subcategoryRoute = require('./routes/subcategories');
 const levelRoute = require('./routes/levels');
+const cardRoute = require('./routes/cards');
 
 const connectDB = require('./database/database');
 connectDB();
@@ -20,6 +21,7 @@ app.use('/', adminRoute);
 app.use('/', categoryRoute);
 app.use('/', subcategoryRoute);
 app.use('/', levelRoute);
+app.use('/', cardRoute);
 app.use(notFound);
 app.use(errorHandlerMiddleware);
 

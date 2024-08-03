@@ -9,18 +9,18 @@ const createCategory = asyncWrapper(async (req, res) => {
 });
 
 const getAllCategory = asyncWrapper(async (req, res) => {
-    const category = await Category.find({}).populate('subcategories');
+    const category = await Category.find({});
     res.status(200).json({category})
 });
 
 const getOneCategory = asyncWrapper(async (req, res) => {
     const {id} = req.params;
-    const category = await Category.findById(id).populate('subcategories')
+    const category = await Category.findById(id)
     if (!category) {
         return next(createCustomError(`category not found : ${id}`, 404))
     }
     res.status(200).json({category})
-});
+})
 
 module.exports = { createCategory,
     getAllCategory,

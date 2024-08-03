@@ -5,7 +5,8 @@ const asyncWrapper = require('../middleware/async');
 const {createCustomError} = require('../errors/custom_error');
 
 const createLevel = asyncWrapper( async (req, res) => {
-    const { levelname, categoryId, subcategoryId } = req.body;
+    const { levelname } = req.body;
+    const { categoryId, subcategoryId } = req.params
     const category = await Category.findById(categoryId);
     if (!category) {
         return next(createCustomError(`Category not found : ${categoryId}`, 404))
@@ -14,11 +15,11 @@ const createLevel = asyncWrapper( async (req, res) => {
     if (!subcategory) {
         return next(createCustomError(`Subcategory not found : ${subcategoryId}`, 404))
     }
-    const existingLevel = await Level.findOne({ levelname, category: categoryId, subcategory: subcategoryId });
+    const existingLevel = await Level.findOne({ levelname: levelname});
     if (existingLevel) {
         return next(createCustomError(`Level already exists`, 400));
     }
-    const levelData = await Level.create({ levelname, category: categoryId, subcategory: subcategoryId });
+    const levelData = new Level({ levelname, category: categoryId, Subcategory: subcategoryId });
     category.level.push(levelData._id);
     subcategory.level.push(levelData._id);
     await category.save();
@@ -28,7 +29,7 @@ const createLevel = asyncWrapper( async (req, res) => {
 });
 
 const getAllLevels = asyncWrapper(async (req, res) => {
-    const level = await Level.find({}).populate('cards')
+    const level = await Level.find({})
     res.status(200).json({ level });
 });
 

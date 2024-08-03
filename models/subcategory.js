@@ -9,10 +9,10 @@ const subcategorySchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category'
     },
-    level: {
+    level: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Level'
-    }
+    }]
 });
 
 
