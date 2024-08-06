@@ -72,6 +72,44 @@ const login = asyncWrapper( async (req, res, next) => {
     }
 });
 
+const changePassword = asyncWrapper(async(req, res, next) => {
+    const { oldPassword, newPassword } = req.body;
+    const {id} = req.params;
+    const user = await Users.findById(id);
+    if (!user) {
+        return next(createCustomError(`User not found : ${id}`, 404));
+    }
+
+    const comparePassword = await bcrypt.compare(oldPassword, user.password);
+    if (comparePassword !== true) {
+        return next(createCustomError(`Password incorrect`, 404))
+    }
+    const saltPassword = bcrypt.genSaltSync(10);
+    const hashPassword = bcrypt.hashSync(newPassword, saltPassword);
+
+    if (newPassword === oldPassword) {
+        return next(createCustomError(`Unauthorised`, 404))
+    }
+    user.password = hashPassword;
+
+    sendEmail({
+        email: user.email,
+        subject: "Password change alert",
+        message: "You have changed your password. If not you alert us"
+    });
+    const result = {
+        name: user.name,
+        email: user.email
+    }
+    await user.save();
+
+    return res.status(200).json({ result })
+});
+
+const forgotPassword = asyncWrapper(async (req, res, next) => {
+    
+})
+
 const getOneUser = asyncWrapper(async (req, res, next) => {
     const {id} = req.params;
     const user = await Users.findById(id)
@@ -118,14 +156,15 @@ const skipped = asyncWrapper(async (req, res, next) => {
     res.status(200).json({ message: 'Card added to skipped list', user });
 });
 
-const getAllStudied = asyncWrapper(async(req, res) => {
-    const studied = await Users.find({});
+const in_Progress = asyncWrapper(async (req, res, next) => {
+    
 })
 
 module.exports = {
      signUp,
      verifyUser, 
      login,
+     changePassword,
      getOneUser, 
      studied, 
      skipped 

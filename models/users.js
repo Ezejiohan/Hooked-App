@@ -43,6 +43,18 @@ const userSchema = new mongoose.Schema({
                 default: Date.now
             }
         }
+    ],
+    in_Progress: [
+        {
+            cardId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Card'
+            },
+            date: {
+                type: Date,
+                default: Date.now
+            }
+        }
     ]
     
 }, {
