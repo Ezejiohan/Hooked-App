@@ -4,6 +4,9 @@ const asyncWrapper = (fn) => {
             await fn(req, res, next)
         } catch (error) {
             console.log(error)
+            if (error instanceof jwt.JsonWebTokenError){
+                res.json('Link has expired')
+            }
             next(error)
         }
     }

@@ -6,7 +6,9 @@ const {
     skipped, 
     getOneUser,
     verifyUser,
-    changePassword
+    changePassword,
+    forgotPassword,
+    resetPassword
 } = require('../controllers/user');
 
 const route = express.Router();
@@ -18,6 +20,8 @@ route.post('/users', (signUp));
 route.get('/users/verifyUser/:id', (verifyUser));
 route.post('/users/log-in', (login));
 route.put('/users/changePassword/:id', (changePassword));
+route.post('/users/forgotPassword', (forgotPassword));
+route.patch('/users/resetPassword/:id/:token', (resetPassword));
 route.get('/users/:id', (getOneUser));
 route.post('/users/:userId/studied/:cardId', (studied));
 route.post('/users/:userId/skipped/:cardId', (skipped));

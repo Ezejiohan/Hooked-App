@@ -107,7 +107,55 @@ const changePassword = asyncWrapper(async(req, res, next) => {
 });
 
 const forgotPassword = asyncWrapper(async (req, res, next) => {
+    const user = await Users.findOne({ email: req.body.email });
+    if (!user) {
+        return next(createCustomError(`User not found`, 404));
+    }
+    const token = jwt.sign({
+        id: user._id,
+        email: user.email
+    }, process.env.TOKEN, {expiresIn: '30mins'})
+
+    const passwordChangeLink = `${req.protocol}://${req.get("host")}/user/resetPassword/${user._id}/${token}`;
+    const message = `Click this link: ${passwordChangeLink} to set a new password`;
+
+    sendEmail({
+        email: user.email,
+        subject: 'Forget password link',
+        message: message
+    });
+
+    res.status(200).json({
+        message: "Email has sent"
+    });
+});
+
+const resetPassword = asyncWrapper(async(req, res, next) => {
+    const { newPassword, confirmPassword } = req.body;
+    const token = req.params.token
+    const user = await Users.findById(req.params.id);
+    if (!user) {
+        return next(createCustomError(`User not found`, 404));
+    }
+    await jwt.verify(token, process.env.TOKEN)
     
+
+    if (newPassword !== confirmPassword) {
+        return res.status(403).json({
+            message: 'There is a difference in both password'
+        });
+    }
+
+    const saltPassword = bcrypt.genSaltSync(10);
+    const hashPassword = bcrypt.hashSync(newPassword, saltPassword);
+
+    const updatePassword = await Users.findByIdAndUpdate(req.params.id, {
+        password: hashPassword
+    });
+
+    await user.save();
+
+    res.status(200).json({updatePassword})
 })
 
 const getOneUser = asyncWrapper(async (req, res, next) => {
@@ -165,6 +213,8 @@ module.exports = {
      verifyUser, 
      login,
      changePassword,
+     forgotPassword,
+     resetPassword,
      getOneUser, 
      studied, 
      skipped 
