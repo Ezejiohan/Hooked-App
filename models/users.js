@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'password must be 8 characters long and include at least one uppercase and one special character']
     },
+    isVerified: {
+        type: Boolean,
+        default: false
+    },
     studied: [
         {
             cardId: {
