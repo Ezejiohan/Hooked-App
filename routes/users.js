@@ -8,7 +8,8 @@ const {
     verifyUser,
     changePassword,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    inProgress
 } = require('../controllers/user');
 
 const route = express.Router();
@@ -25,5 +26,6 @@ route.patch('/users/resetPassword/:id/:token', (resetPassword));
 route.get('/users/:id', (getOneUser));
 route.post('/users/:userId/studied/:cardId', (studied));
 route.post('/users/:userId/skipped/:cardId', (skipped));
+route.post('/users/:userId/inProgress/:cardId', (inProgress));
 
 module.exports = route;

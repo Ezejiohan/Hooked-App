@@ -70,7 +70,97 @@ const login = asyncWrapper(async (req, res, next) => {
     }
 });
 
+const adminChangePassword = asyncWrapper(async(req, res, next) => {
+    const { oldPassword, newPassword } = req.body;
+    const {id} = req.params;
+    const admin = await Admin.findById(id);
+    if (!admin) {
+        return next(createCustomError(`Admin not found : ${id}`, 404));
+    }
+
+    const comparePassword = await bcrypt.compare(oldPassword, admin.password);
+    if (comparePassword !== true) {
+        return next(createCustomError(`Password incorrect`, 404))
+    }
+    const saltPassword = bcrypt.genSaltSync(10);
+    const hashPassword = bcrypt.hashSync(newPassword, saltPassword);
+
+    if (newPassword === oldPassword) {
+        return next(createCustomError(`Unauthorised`, 404))
+    }
+    admin.password = hashPassword;
+
+    sendEmail({
+        email: admin.email,
+        subject: "Password change alert",
+        message: "You have changed your password. If not you alert us"
+    });
+    const result = {
+        name: admin.name,
+        email: admin.email
+    }
+    await admin.save();
+
+    return res.status(200).json({ result })
+});
+
+const adminForgotPassword = asyncWrapper(async (req, res, next) => {
+    const admin = await Admin.findOne({ email: req.body.email });
+    if (!admin) {
+        return next(createCustomError(`Admin not found`, 404));
+    }
+    const token = jwt.sign({
+        id: admin._id,
+        email: admin.email
+    }, process.env.TOKEN, {expiresIn: '30mins'})
+
+    const passwordChangeLink = `${req.protocol}://${req.get("host")}/admin/resetPassword/${admin._id}/${token}`;
+    const message = `Click this link: ${passwordChangeLink} to set a new password`;
+
+    sendEmail({
+        email: admin.email,
+        subject: 'Forget password link',
+        message: message
+    });
+
+    res.status(200).json({
+        message: "Email has sent"
+    });
+});
+
+const adminResetPassword = asyncWrapper(async(req, res, next) => {
+    const { newPassword, confirmPassword } = req.body;
+    const token = req.params.token
+    const admin = await Admin.findById(req.params.id);
+    if (!admin) {
+        return next(createCustomError(`Admin not found`, 404));
+    }
+    await jwt.verify(token, process.env.TOKEN)
+    
+
+    if (newPassword !== confirmPassword) {
+        return res.status(403).json({
+            message: 'There is a difference in both password'
+        });
+    }
+
+    const saltPassword = bcrypt.genSaltSync(10);
+    const hashPassword = bcrypt.hashSync(newPassword, saltPassword);
+
+    const updatePassword = await Admin.findByIdAndUpdate(req.params.id, {
+        password: hashPassword
+    });
+
+    await admin.save();
+
+    res.status(200).json({updatePassword})
+})
+
 module.exports = { 
     signUp, 
     verifyAdmin,
-    login }
+    login, 
+    adminChangePassword,
+    adminForgotPassword,
+    adminResetPassword
+}

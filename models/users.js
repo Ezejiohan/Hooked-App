@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
             }
         }
     ],
-    in_Progress: [
+    inProgress: [
         {
             cardId: {
                 type: mongoose.Schema.Types.ObjectId,
