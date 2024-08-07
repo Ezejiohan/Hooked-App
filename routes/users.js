@@ -9,7 +9,10 @@ const {
     changePassword,
     forgotPassword,
     resetPassword,
-    inProgress
+    inProgress,
+    getAllStudied,
+    getAllSkipped,
+    getAllInProgress
 } = require('../controllers/user');
 
 const route = express.Router();
@@ -27,5 +30,8 @@ route.get('/users/:id', (getOneUser));
 route.post('/users/:userId/studied/:cardId', (studied));
 route.post('/users/:userId/skipped/:cardId', (skipped));
 route.post('/users/:userId/inProgress/:cardId', (inProgress));
+route.get('/users/studied/:userId', (getAllStudied));
+route.get('/users/skipped/:userId', (getAllSkipped));
+route.get('/users/inProgress/:userId', (getAllInProgress));
 
 module.exports = route;

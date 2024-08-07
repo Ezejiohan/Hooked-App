@@ -220,27 +220,38 @@ const studied = asyncWrapper( async (req, res, next) => {
     // Find the user by ID
     const user = await Users.findById(req.params.userId)
     if (!user) {
+        // If user not found, return 404 error
         return next(createCustomError('User not found', 404));
     }
     // Find the card by ID
     const card = await Cards.findById(cardId);
     if (!card) {
+        // If card not found, return 404 error
         return next(createCustomError('Card not found', 404));
     }
 
     // Remove the card from skipped list if present
     const cardIndex = user.skipped.findIndex(item => item.toString() === cardId);
     if (cardIndex !== -1) {
+        // Remove the card from skipped list
         user.skipped.splice(cardIndex, 1);
+    }
+    // Remove the card from inProgress list if present and add to studied list
+    const cardIndexInProgress = user.inProgress.indexOf(cardId);
+    if (cardIndexInProgress !== -1) {
+        // Remove the card from inProgress list
+        user.inProgress.splice(cardIndexInProgress, 1); 
+        // Add the card to studied list
+        user.studied.push(cardId); 
     }
 
     // Add the card to the studied list if not already present
     if (!user.studied.some(item => item.toString() === cardId)) {
         user.studied.push(cardId);
     }
-
+    // Save the updated user data
     await user.save();
-
+    // Send a response indicating success
     res.status(200).json({ message: 'Card added to studied list', user });
 });
 
@@ -251,12 +262,23 @@ const skipped = asyncWrapper(async (req, res, next) => {
     // Find the user by ID
     const user = await Users.findById(userId);
     if (!user) {
+        // If user not found, return 404 error
         return next(createCustomError('User not found', 404));
     }
+
+    // Remove the card from the inProgress list if present
+    const cardIndexInProgress = user.inProgress.indexOf(cardId);
+    if (cardIndexInProgress !== -1) {
+        // Remove the card from inProgress list
+        user.inProgress.splice(cardIndexInProgress, 1); 
+    }
+
     // Add the card to the skipped list
     user.skipped.push({ cardId });
+    // Save the updated user data
     await user.save();
 
+    // Send a response indicating success
     res.status(200).json({ message: 'Card added to skipped list', user });
 });
 
@@ -269,16 +291,74 @@ const inProgress = asyncWrapper(async (req, res, next) => {
     if (!user) {
         return next(createCustomError('User not found', 404));
     }
-    
+    // Find card by ID
+    const card = await Cards.findById(cardId)
+    if (!card) {
+        return next(createCustomError('Card not found', 404));
+    }
     // Add the card to the in-progress list if not already present
     if (!user.inProgress.includes(cardId)) {
         user.inProgress.push(cardId);
     }
-
+     // Save the updated user data
     await user.save();
-
+    // Send a response indicating success
     res.status(200).json({ message: 'Card added to in-progress list', user });
 });
+
+// Get all cards in the studied list controller
+const getAllStudied = asyncWrapper(async(req, res, next) => {
+    const { userId } = req.params;
+    // Find the user by ID
+    const user = await Users.findById(userId).populate('studied');
+    if (!user) {
+        // If user not found, return 404 error
+        return next(createCustomError('User not found', 404));
+    }
+
+    // Retrieve the studied cards list
+    const studiedCards = user.studied;
+
+    // Send a response with the studied cards list
+    res.status(200).json({ studiedCards });
+});
+
+// Get all cards in the skipped list controller
+const getAllSkipped = asyncWrapper(async (req, res, next) => {
+    const { userId } = req.params;
+
+    // Find the user by ID
+    const user = await Users.findById(userId).populate('skipped');
+    if (!user) {
+        // If user not found, return 404 error
+        return next(createCustomError('User not found', 404));
+    }
+
+    // Retrieve the skipped cards list
+    const skippedCards = user.skipped;
+
+    // Send a response with the skipped cards list
+    res.status(200).json({ skippedCards });
+});
+
+// Get all cards in the in-progress list controller
+const getAllInProgress = asyncWrapper(async (req, res, next) => {
+    const { userId } = req.params;
+
+    // Find the user by ID
+    const user = await Users.findById(userId).populate('inProgress');
+    if (!user) {
+        // If user not found, return 404 error
+        return next(createCustomError('User not found', 404));
+    }
+
+    // Retrieve the in-progress cards list
+    const inProgressCards = user.inProgress;
+
+    // Send a response with the in-progress cards list
+    res.status(200).json({ inProgressCards });
+});
+
 
 module.exports = {
      signUp,
@@ -290,5 +370,8 @@ module.exports = {
      getOneUser, 
      studied, 
      skipped, 
-     inProgress
+     inProgress,
+     getAllStudied,
+     getAllSkipped,
+     getAllInProgress
 }
