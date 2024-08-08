@@ -83,7 +83,7 @@ const login = asyncWrapper( async (req, res, next) => {
             const generatedToken = jwt.sign({
                 id: user._id,
                 email: user.email,
-            }, process.env.TOKEN, { expiresIn: '12h'})
+            }, process.env.TOKEN, { expiresIn: '1day'})
 
             // Respond with user info and token
             const result = {

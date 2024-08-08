@@ -76,7 +76,7 @@ const login = asyncWrapper(async (req, res, next) => {
             const generatedToken = jwt.sign({
                 id: admin._id,
                 email: admin.email,
-            }, process.env.TOKEN, { expiresIn: '12h'});
+            }, process.env.TOKEN, { expiresIn: '1day'});
 
             // Respond with admin info and token
             const result = {
