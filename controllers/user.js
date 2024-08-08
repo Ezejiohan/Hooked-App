@@ -308,71 +308,87 @@ const inProgress = asyncWrapper(async (req, res, next) => {
 
 // Get all cards in the studied list controller
 const getAllStudied = asyncWrapper(async(req, res, next) => {
-    const { userId } = req.params;
-    // Find the user by ID
+    const { userId } = req.params; // Extract the userId from the request parameters
+
+    // Find the user by ID and populate the 'studied' field with card data
     const user = await Users.findById(userId).populate('studied');
     if (!user) {
-        // If user not found, return 404 error
+        // If user not found, return a 404 error using a custom error handler
         return next(createCustomError('User not found', 404));
     }
 
-    let arrayOfCards = []
-    // Retrieve the studied cards list
+    let arrayOfCards = []; // Initialize an array to hold the studied cards
+
+    // Retrieve the list of studied cards from the user
     const studiedCards = user.studied;
+
+    // Loop through each card ID in the studied list
     for (const cards of studiedCards){
-        const card = await Cards.findById(cards)
-        arrayOfCards.push(card)
+        // Find the full card details by ID and add it to the array
+        const card = await Cards.findById(cards);
+        arrayOfCards.push(card);
     }
 
-    // Send a response with the studied cards list
+    // Send a response with the array of studied cards
     res.status(200).json({ arrayOfCards });
 });
+
 
 // Get all cards in the skipped list controller
 const getAllSkipped = asyncWrapper(async (req, res, next) => {
-    const { userId } = req.params;
+    const { userId } = req.params; // Extract the userId from the request parameters
 
-    // Find the user by ID
+    // Find the user by ID and populate the 'skipped' field with card data
     const user = await Users.findById(userId).populate('skipped');
     if (!user) {
-        // If user not found, return 404 error
+        // If user not found, return a 404 error using a custom error handler
         return next(createCustomError('User not found', 404));
     }
 
-    let arrayOfCards = []
-    // Retrieve the studied cards list
+    let arrayOfCards = []; // Initialize an array to hold the skipped cards
+
+    // Retrieve the list of skipped cards from the user
     const skippedCards = user.skipped;
+
+    // Loop through each card ID in the skipped list
     for (const cards of skippedCards){
-        const card = await Cards.findById(cards)
-        arrayOfCards.push(card)
+        // Find the full card details by ID and add it to the array
+        const card = await Cards.findById(cards);
+        arrayOfCards.push(card);
     }
 
-    // Send a response with the skipped cards list
+    // Send a response with the array of skipped cards
     res.status(200).json({ arrayOfCards });
 });
+
 
 // Get all cards in the in-progress list controller
 const getAllInProgress = asyncWrapper(async (req, res, next) => {
-    const { userId } = req.params;
+    const { userId } = req.params; // Extract the userId from the request parameters
 
-    // Find the user by ID
+    // Find the user by ID and populate the 'inProgress' field with card data
     const user = await Users.findById(userId).populate('inProgress');
     if (!user) {
-        // If user not found, return 404 error
+        // If user not found, return a 404 error using a custom error handler
         return next(createCustomError('User not found', 404));
     }
 
-    let arrayOfCards = []
-    // Retrieve the studied cards list
+    let arrayOfCards = []; // Initialize an array to hold the in-progress cards
+
+    // Retrieve the list of in-progress cards from the user
     const inProgressCards = user.inProgress;
-    for (const cards of inProgressCards){
-        const card = await Cards.findById(cards)
-        arrayOfCards.push(card)
+
+    // Loop through each card ID in the in-progress list
+    for (const cards of inProgressCards) {
+        // Find the full card details by ID and add it to the array
+        const card = await Cards.findById(cards);
+        arrayOfCards.push(card);
     }
 
-    // Send a response with the in-progress cards list
+    // Send a response with the array of in-progress cards
     res.status(200).json({ arrayOfCards });
 });
+
 
 
 module.exports = {
