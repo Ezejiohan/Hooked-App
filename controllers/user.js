@@ -274,7 +274,7 @@ const skipped = asyncWrapper(async (req, res, next) => {
     }
 
     // Add the card to the skipped list
-    user.skipped.push({ cardId });
+    user.skipped.push(cardId);
     // Save the updated user data
     await user.save();
 
@@ -316,11 +316,16 @@ const getAllStudied = asyncWrapper(async(req, res, next) => {
         return next(createCustomError('User not found', 404));
     }
 
+    let arrayOfCards = []
     // Retrieve the studied cards list
     const studiedCards = user.studied;
+    for (const cards of studiedCards){
+        const card = await Cards.findById(cards)
+        arrayOfCards.push(card)
+    }
 
     // Send a response with the studied cards list
-    res.status(200).json({ studiedCards });
+    res.status(200).json({ arrayOfCards });
 });
 
 // Get all cards in the skipped list controller
@@ -334,11 +339,16 @@ const getAllSkipped = asyncWrapper(async (req, res, next) => {
         return next(createCustomError('User not found', 404));
     }
 
-    // Retrieve the skipped cards list
+    let arrayOfCards = []
+    // Retrieve the studied cards list
     const skippedCards = user.skipped;
+    for (const cards of skippedCards){
+        const card = await Cards.findById(cards)
+        arrayOfCards.push(card)
+    }
 
     // Send a response with the skipped cards list
-    res.status(200).json({ skippedCards });
+    res.status(200).json({ arrayOfCards });
 });
 
 // Get all cards in the in-progress list controller
@@ -352,11 +362,16 @@ const getAllInProgress = asyncWrapper(async (req, res, next) => {
         return next(createCustomError('User not found', 404));
     }
 
-    // Retrieve the in-progress cards list
+    let arrayOfCards = []
+    // Retrieve the studied cards list
     const inProgressCards = user.inProgress;
+    for (const cards of inProgressCards){
+        const card = await Cards.findById(cards)
+        arrayOfCards.push(card)
+    }
 
     // Send a response with the in-progress cards list
-    res.status(200).json({ inProgressCards });
+    res.status(200).json({ arrayOfCards });
 });
 
 
