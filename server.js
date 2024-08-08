@@ -12,7 +12,7 @@ connectDB();
 
 const app = express();
 const {notFound} = require('./middleware/not_found');
-const errorHandlerMiddleware = require('./middleware/errorhandler');
+const {errorHandlerMiddleware} = require('./middleware/errorhandler');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

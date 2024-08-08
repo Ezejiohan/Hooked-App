@@ -1,3 +1,7 @@
-const notFound = (req, res) => res.status(404).send('Route does not exist');
+// Define a middleware function for handling requests to non-existent routes
+const notFound = (req, res) => 
+    // Respond with a 404 status code and a message indicating the route doesn't exist
+    res.status(404).send('Route does not exist');
 
-module.exports = {notFound};
+// Export the notFound middleware so it can be used in the application
+module.exports = { notFound };
