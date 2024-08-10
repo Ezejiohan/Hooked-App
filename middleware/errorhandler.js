@@ -8,7 +8,10 @@ const errorHandlerMiddleware = (err, req, res, next) => {
         // If it is, respond with the error's status code and message
         return res.status(err.statusCode).json({ msg: err.message });
     }
-
+    // Handle any JWT-related errors that might occur
+    if (err instanceof jwt.JsonWebTokenError) {
+         return next(createCustomError("Session time out"));
+    }
     // If the error is not a CustomAPIError, respond with a generic 500 status code
     return res.status(500).json({
         msg: `Something went wrong, try again later`,

@@ -32,10 +32,6 @@ const authenticate = asyncWrapper(async (req, res, next) => {
     // Continue to the next middleware or route handler
     next();
 
-    // Handle any JWT-related errors that might occur
-    if (error instanceof jwt.JsonWebTokenError) {
-        return next(createCustomError("Session time out"));
-    }
 });
 
 // Export the authenticate middleware for use in other parts of the application
