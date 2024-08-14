@@ -5,6 +5,7 @@ const asyncWrapper = require('../middleware/async');
 const { createCustomError } = require('../errors/custom_error');
 const Cards = require('../models/card');
 const {sendEmail} = require('../utilities/nodemailer');
+const { ca } = require('date-fns/locale');
 
 // User signUp controller
 const signUp = asyncWrapper( async (req, res, next) => {
@@ -311,7 +312,7 @@ const getAllStudied = asyncWrapper(async(req, res, next) => {
     const { userId } = req.params; // Extract the userId from the request parameters
 
     // Find the user by ID and populate the 'studied' field with card data
-    const user = await Users.findById(userId).populate('studied');
+    const user = await Users.findById(userId);
     if (!user) {
         // If user not found, return a 404 error using a custom error handler
         return next(createCustomError('User not found', 404));
@@ -339,7 +340,7 @@ const getAllSkipped = asyncWrapper(async (req, res, next) => {
     const { userId } = req.params; // Extract the userId from the request parameters
 
     // Find the user by ID and populate the 'skipped' field with card data
-    const user = await Users.findById(userId).populate('skipped');
+    const user = await Users.findById(userId);
     if (!user) {
         // If user not found, return a 404 error using a custom error handler
         return next(createCustomError('User not found', 404));
@@ -367,7 +368,7 @@ const getAllInProgress = asyncWrapper(async (req, res, next) => {
     const { userId } = req.params; // Extract the userId from the request parameters
 
     // Find the user by ID and populate the 'inProgress' field with card data
-    const user = await Users.findById(userId).populate('inProgress');
+    const user = await Users.findById(userId);
     if (!user) {
         // If user not found, return a 404 error using a custom error handler
         return next(createCustomError('User not found', 404));
@@ -389,6 +390,48 @@ const getAllInProgress = asyncWrapper(async (req, res, next) => {
     res.status(200).json({ arrayOfCards });
 });
 
+const saveCards = asyncWrapper( async (req, res, next) => {
+    const { userId, cardId } = req.params;
+    // Find the user by ID
+    const user = await Users.findById(userId)
+    if (!user) {
+        // If user not found, return 404 error
+        return next(createCustomError('User not found', 404));
+    }
+    // Find the card by ID
+    const card = await Cards.findById(cardId);
+    if (!card) {
+        // If card not found, return 404 error
+        return next(createCustomError('Card not found', 404));
+    }
+    user.savedCards.push(card._id)
+    // Save the updated user data
+    await user.save();
+    // Send a response indicating success
+    res.status(200).json({ message: 'Card Saved', user });
+});
+
+const getAllSavedCards = asyncWrapper(async (req, res, next) => {
+    const { userId } = req.params;
+    const user = await Users.findById(userId);
+    if (!user) {
+        return next(createCustomError('User not found', 404));
+    }
+    let arrayOfCards = []; // Initialize an array to hold the saved cards
+
+    // Retrieve the list of saved cards from the user
+    const savedCards = user.savedCards;
+
+    // Loop through each card ID in the saved cards list
+    for (const cards of savedCards){
+        // Find the full card details by ID and add it to the array
+        const card = await Cards.findById(cards);
+        arrayOfCards.push(card);
+    } 
+     // Send a response with the array of saved cards
+     res.status(200).json({ arrayOfCards });
+})
+
 
 
 module.exports = {
@@ -404,5 +447,7 @@ module.exports = {
      inProgress,
      getAllStudied,
      getAllSkipped,
-     getAllInProgress
+     getAllInProgress,
+     saveCards,
+     getAllSavedCards
 }

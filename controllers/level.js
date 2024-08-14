@@ -45,7 +45,7 @@ const createLevel = asyncWrapper( async (req, res) => {
 
 const getAllLevels = asyncWrapper(async (req, res) => {
     // Fetch all levels from the database
-    const level = await Level.find({});
+    const level = await Level.find({}).populate('cards');
     // Respond with the array of all levels
     res.status(200).json({ level });
 });

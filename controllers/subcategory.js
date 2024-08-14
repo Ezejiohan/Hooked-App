@@ -30,7 +30,7 @@ const createSubcategory = asyncWrapper(async (req, res) => {
 
 const getAllSubcategory = asyncWrapper(async (req, res) => {
     // Fetch all subcategories and populate the associated category data
-    const subcategory = await Subcategory.find({}).populate('category')
+    const subcategory = await Subcategory.find({}).populate('level');
     // Respond with the array of all subcategories
     res.status(200).json({subcategory})
 });
@@ -39,7 +39,7 @@ const getOneSubcategory = asyncWrapper(async (req, res) => {
     // Extract the subcategory ID from request parameters
     const {id} = req.params;
     // Find the subcategory by ID and populate its associated category
-    const subcategory = await Subcategory.findById(id).populate('category')
+    const subcategory = await Subcategory.findById(id).populate('level');
     if (!subcategory) {
         // If subcategory not found, throw a 404 error
         return next(createCustomError(`subcategory not found : ${id}`, 404))

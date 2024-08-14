@@ -12,7 +12,9 @@ const {
     inProgress,
     getAllStudied,
     getAllSkipped,
-    getAllInProgress
+    getAllInProgress,
+    saveCards,
+    getAllSavedCards
 } = require('../controllers/user');
 const { authenticateUser } = require('../middleware/userAuthentication');
 
@@ -34,5 +36,7 @@ route.post('/users/:userId/inProgress/:cardId', authenticateUser, (inProgress));
 route.get('/users/studied/:userId', authenticateUser, (getAllStudied));
 route.get('/users/skipped/:userId', authenticateUser, (getAllSkipped));
 route.get('/users/inProgress/:userId', authenticateUser, (getAllInProgress));
+route.post('/users/:userId/saveCards/:cardId', authenticateUser, (saveCards));
+route.get('/users/getAllSavedCards/:userId', authenticateUser, (getAllSavedCards));
 
 module.exports = route;

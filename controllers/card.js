@@ -22,6 +22,7 @@ const createCard = asyncWrapper(async(req, res, next) => {
 
     // Save the card to the database
     await cardData.save();
+    await level.save();
     // Respond with the created card data
     res.status(201).json({ cardData })
 });

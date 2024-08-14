@@ -55,11 +55,23 @@ const userSchema = new mongoose.Schema({
                 default: Date.now
             }
         }
+    ],
+    savedCards: [
+        {
+            cardId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Card'
+            },
+            date: {
+                type: Date,
+                default: Date.now
+            }
+        }
     ]
     
 }, {
     timestamps: true
 });
 
-const Users = mongoose.model('Users', userSchema);
+const   Users = mongoose.model('Users', userSchema);
 module.exports = Users;
