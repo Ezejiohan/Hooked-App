@@ -12,6 +12,6 @@ adminRoute.get('/admins/verifyAdmin/:id', (verifyAdmin));
 adminRoute.post('/admins/log_in', (login));
 adminRoute.put('/admins/changePassword/:id', authenticate, (adminChangePassword));
 adminRoute.post('/admins/forgotPassword', (adminForgotPassword));
-adminRoute.patch('admins/resetPassword/:id/:token', (adminResetPassword));
+adminRoute.patch('/admins/resetPassword/:id/:token', (adminResetPassword));
 
 module.exports = adminRoute;
