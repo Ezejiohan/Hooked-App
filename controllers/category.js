@@ -13,7 +13,7 @@ const createCategory = asyncWrapper(async (req, res) => {
 
 const getAllCategory = asyncWrapper(async (req, res) => {
     // Fetch all categories from the database
-    const category = await Category.find({}).populate('subcategories');
+    const category = await Category.find({}).populate('subCategories');
     // Respond with the array of all categories
     res.status(200).json({category})
 });
@@ -22,7 +22,7 @@ const getOneCategory = asyncWrapper(async (req, res) => {
     // Get category ID from request parameters
     const {id} = req.params;
     // Find the category by ID
-    const category = await Category.findById(id).populate('subcategories');
+    const category = await Category.findById(id).populate('subCategories');
     if (!category) {
         // If category not found, throw a 404 error
         return next(createCustomError(`category not found : ${id}`, 404))
