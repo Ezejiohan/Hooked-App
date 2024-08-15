@@ -9,7 +9,7 @@ categoryRoute.get('/', (req, res) => {
 });
 
 categoryRoute.post('/categorys', authenticate, (createCategory));
-categoryRoute.get('/categorys', authenticate, (getAllCategory));
+categoryRoute.get('/categorys/getAllCategory', authenticate, (getAllCategory));
 categoryRoute.get('/categorys/:id', authenticate, (getOneCategory));
 
 module.exports = categoryRoute;
